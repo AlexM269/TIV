@@ -1,0 +1,9 @@
+#Projet de Traitement Image et Vidéo 2023
+#Prune Lepvraud, Alexandre Mahjoub, Anouk Migliavacca et Pauline Roches
+label electricity
+form 00402
+scripter 004
+page 02
+row 4
+column 2
+size 

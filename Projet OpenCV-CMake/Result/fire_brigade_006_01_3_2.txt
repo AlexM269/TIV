@@ -1,0 +1,9 @@
+#Projet de Traitement Image et Vidéo 2023
+#Prune Lepvraud, Alexandre Mahjoub, Anouk Migliavacca et Pauline Roches
+label fire_brigade
+form 00601
+scripter 006
+page 01
+row 3
+column 2
+size 
