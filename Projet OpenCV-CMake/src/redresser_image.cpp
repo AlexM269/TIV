@@ -48,7 +48,7 @@ void redresser_image(const std::string& filename,const std::string& nom) {
 
 
     // Définir un seuil pour filtrer les correspondances
-    double seuil = 0.93;
+    double seuil = 0.92;
     double seuil2 = 0.994;
 
     // Trouver les positions des correspondances supérieures au seuil
