@@ -24,24 +24,21 @@ void redresser_image(const std::string& filename,const std::string& nom) {
     }
 
 
-    // Charger le modèle en niveaux de gris (1 canal)
-    cv::Mat modele = cv::imread("../model_cross.png", cv::IMREAD_GRAYSCALE);
+    // Charger les modèles
+    cv::Mat modele = cv::imread("../model_cross.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
 
-    cv::Mat modele2 = cv::imread("../model_cross_2.png", cv::IMREAD_GRAYSCALE);
+    cv::Mat modele2 = cv::imread("../model_cross_2.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
 
-    cv::Mat bord = cv::imread("../bord.png", cv::IMREAD_GRAYSCALE);
+    cv::Mat bord = cv::imread("../bord.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
-
-    // Convertir l'image en niveaux de gris (1 canal)
-    cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
 
     // Appliquer le matching de modèle
     cv::Mat resultat;
@@ -71,10 +68,11 @@ void redresser_image(const std::string& filename,const std::string& nom) {
             // Mettre à jour la région détectée avec une valeur inférieure au seuil
             cv::floodFill(resultat, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
         }else{
-            break;  // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+        // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+            break;  
         }
     }
-
+    cout<<"truc";
     cv::matchTemplate(image, modele2, resultat, cv::TM_CCOEFF_NORMED);
 
     if(positions.size()<1){
@@ -94,7 +92,8 @@ void redresser_image(const std::string& filename,const std::string& nom) {
                 // Mettre à jour la région détectée avec une valeur inférieure au seuil
                 cv::floodFill(resultat, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
             }else{
-                break;  // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+            // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+                break;  
             }
         }
     }
@@ -115,16 +114,14 @@ void redresser_image(const std::string& filename,const std::string& nom) {
             // Mettre à jour la région détectée avec une valeur inférieure au seuil
             cv::floodFill(resultat2, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
         } else {
-            break;  // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+        // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+            break;  
         }
         j=0;
     }
 
-    // Obtenir les dimensions de l'image
-    int rows = modele.rows;
-    int cols = modele.cols;
 
-    // Définir deux points source et deux points de destination
+    // Définir les points sources (centre des zones de matchTemplate)
     cv::Point2f pts1[3];
     int i=0;
     for (const auto& position : positions) {
@@ -138,7 +135,7 @@ void redresser_image(const std::string& filename,const std::string& nom) {
         pts1[1]=temp;
     }
 
-
+    // Définir les points destinations en fonction de l'image 00102
     cv::Point2f pts2[3] = { cv::Point2f(2211, 469), cv::Point2f(258, 3230), cv::Point2f(1451, 632)};
     cv::Mat warpedImage;
 
@@ -157,8 +154,7 @@ void redresser_image(const std::string& filename,const std::string& nom) {
     // Créer le chemin du nouveau fichier dans un dossier différent
     string outputPath = "../images_droites/" + nom;
 
-    // Enregistrer l'image avec les rectangles dessinés
-    cv::imwrite("../resultat_template_matching.png", image);
+    // Enregistrer l'image redressée
     cv::imwrite(outputPath, warpedImage);
 
     // Attendre que l'utilisateur appuie sur une touche
