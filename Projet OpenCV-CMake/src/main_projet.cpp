@@ -191,7 +191,7 @@ int main (void) {
                     //Récupère le path du fichier concerné
                     std::string imName = ".//..//images_droites/" + nom;
 
-                    rect_cutting(610+14,720+60,238,351-17,348-18, imName, scripterNumber, pageNumber);
+                    rect_cutting(610+14,720+60,235,351-18,348-18, imName, scripterNumber, pageNumber);
 
 
 
