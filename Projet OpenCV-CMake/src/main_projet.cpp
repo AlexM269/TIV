@@ -66,7 +66,6 @@ void rect_cutting(int x_init, int y_init, int size, int inter_x, int inter_y, st
         if(labelName!="none"){
             for (int j = 0; j < 5 ; j++){
 
-
             // Define the Region of Interest (ROI) using a rectangle
             //width et height : taille du retangle, x y  : point du coin haut gauche du rectangle ?
             Rect roiRect(x, y, size, size);  // Example: (x, y, width, height)
@@ -74,13 +73,8 @@ void rect_cutting(int x_init, int y_init, int size, int inter_x, int inter_y, st
             // Extract the sub-image based on the defined ROI
             Mat roi = im(roiRect).clone();  // Use clone() to create a separate copy of the ROI
 
-
-
-
             //Récupération de la taille
             std::string size = list_size.front();
-
-
 
             // Save the extracted sub-image to a file in cmake-build-debug (default),sinon pr�ciser le chemin
             // Saving Format of the image file : iconeID_scripterNumber_pageNumber_row_column.png
@@ -131,12 +125,10 @@ void rect_cutting(int x_init, int y_init, int size, int inter_x, int inter_y, st
 
 int main (void) {
 
-    //Ajouter ici une boucle for pour chaque image que l'on voudra étudier
     // Spécifiez le chemin du dossier à parcourir
     //const char* dossier = ".//..//NicIcon//all-scans";
     //const char* dossier = ".//..//w000-scans";
     const char* dossier = ".//..//Donnees";
-
 
     // Ouvrir le dossier
     DIR* dir = opendir(dossier);
@@ -154,12 +146,7 @@ int main (void) {
 
                 if(nom.size()>3 and nom.substr(3,2)!="22") {
                     //redresser_image(".//..//NicIcon//all-scans//" + nom,nom);
-
-
                     redresser_image("./../Donnees/" + nom,nom);
-
-
-
                     //redresser_image(".//..//w000-scans//" + nom,nom);
                 }
             }
@@ -173,7 +160,6 @@ int main (void) {
         std::cerr << "Failed to create output directory: " << outputDirectory << '\n';
         return 1;
     }
-
 
     // Spécifiez le chemin du dossier à parcourir
     const char* dossier2 = ".//..//images_droites";

@@ -1,9 +1,0 @@
-#Projet de Traitement Image et Vidéo 2023
-#Prune Lepvraud, Alexandre Mahjoub, Anouk Migliavacca et Pauline Roches
-label accident
-form 00202
-scripter 002
-page 02
-row 6
-column 1
-size 

@@ -39,13 +39,25 @@ list<std::string> reco_label(const string file_img){
         // Convert to NB for comparaison (later)
         cv::Mat imgNB;
         cv::cvtColor(image, imgNB, cv::COLOR_BGR2GRAY);
-        references.push_back(imgNB);
+        cv::Mat dilr;
+        cv::erode(imgNB, dilr, cv::Mat(), cv::Point(-1, -1), 3);
+        cv::Mat dilr2;
+        cv::dilate(dilr, dilr2, cv::Mat(), cv::Point(-1, -1), 2);
+        cv::Mat seuilImage = dilr2.clone();
+        cv::MatIterator_<uchar> it, end;
+        cv::GaussianBlur(imgNB, imgNB, cv::Size(7, 7), 0);
+        for (it = seuilImage.begin<uchar>(), end = seuilImage.end<uchar>(); it != end; ++it) {
+            *it = (*it >= 200) ? 255 : 0;
+        }
+        imwrite("../icon_label/labelled_draw/ref.png", seuilImage);
+        references.push_back(seuilImage);
+
     }
 
     for(int i=0;i<7;i++){
         // Define the Region of Interest (ROI) using a rectangle
         // Width et height : rectangle size, x y  : first left point
-        Rect roiRect(255, 735+347*i, 150, 150);  // (x, y, width, height)
+        Rect roiRect(285, 825+329*i, 150, 150);  // (x, y, width, height)
 
         // Extract the sub-image based on the defined ROI
         Mat roi = im(roiRect).clone();  // Use clone() to create a separate copy of the ROI
@@ -58,21 +70,33 @@ list<std::string> reco_label(const string file_img){
         // Convert to NB for comparaison
         cv::Mat extrNB;
         cv::cvtColor(extracted_img, extrNB, cv::COLOR_BGR2GRAY);
+        cv::Mat dil;
+        cv::erode(extrNB, dil, cv::Mat(), cv::Point(-1, -1), 3);
+        cv::Mat dilr2;
+        cv::dilate(dil, dilr2, cv::Mat(), cv::Point(-1, -1), 2);
+        cv::Mat seuilImage = dilr2.clone();
+        cv::GaussianBlur(seuilImage, seuilImage, cv::Size(7, 7), 0);
+
+
+        cv::MatIterator_<uchar> it, end;
+        for (it = seuilImage.begin<uchar>(), end = seuilImage.end<uchar>(); it != end; ++it) {
+            *it = (*it >= 200) ? 255 : 0;
+        }
+        //imwrite("../icon_label/labelled_draw/dil.png", seuilImage);
+
         // Calcul the similarity between images and references based on shapes comparaison
         double simLab = 10000.0;
         string res ;
         for(int j=1;j<15;j++){
-            double newSim = cv::matchShapes(extrNB, references[j-1], cv::CONTOURS_MATCH_I1, 0);
+            double newSim = cv::matchShapes(seuilImage, references[j-1], cv::CONTOURS_MATCH_I1, 0);
             if(simLab>newSim){
                 simLab = newSim; // Take min value (best correspondance)
-                res = nomsFichiers[j-1].substr(0, nomsFichiers[j-1].size() - 4);
+                res = nomsFichiers[j-1].substr(0,nomsFichiers[j-1].length() - 4);
             }
         }
         if(simLab>0.001){ // No good correspondance found
             res = "none";
-            cout << res << endl;
         }
-        //imwrite(res, roi);
         list_res.push_back(res);
     }
 

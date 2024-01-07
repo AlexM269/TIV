@@ -30,7 +30,7 @@ list<std::string> read_size(const string file_img){
     for(int i=0;i<7;i++){
         // Define the Region of Interest (ROI) using a rectangle
         // Width et height : retangle size, x y  : first left point
-        Rect roiRect(210, 905+347*i, 230, 80);  // (x, y, width, height)
+        Rect roiRect(235, 970+330*i, 230, 80);  // (x, y, width, height)
 
         // Extract the sub-image based on the defined ROI
         Mat roi = im(roiRect).clone();  // Use clone() to create a separate copy of the ROI
