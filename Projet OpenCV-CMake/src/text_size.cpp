@@ -76,7 +76,6 @@ list<std::string> read_size(const string file_img){
         }
     }
 
-
     // Delete temporary directory
     for(int i=1;i<8;i++){
         std::string chemin = "../icon_sizes/tmp_extracted/size" + std::to_string(i) + ".png";

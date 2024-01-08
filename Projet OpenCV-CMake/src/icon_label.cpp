@@ -51,7 +51,6 @@ list<std::string> reco_label(const string file_img){
         }
         imwrite("../icon_label/labelled_draw/ref.png", seuilImage);
         references.push_back(seuilImage);
-
     }
 
     for(int i=0;i<7;i++){
@@ -68,6 +67,7 @@ list<std::string> reco_label(const string file_img){
 
         Mat extracted_img = imread(extracted_lab);
         // Convert to NB for comparaison
+        // Erode, dilate & apply a Gaussian blur on the image
         cv::Mat extrNB;
         cv::cvtColor(extracted_img, extrNB, cv::COLOR_BGR2GRAY);
         cv::Mat dil;
@@ -77,14 +77,12 @@ list<std::string> reco_label(const string file_img){
         cv::Mat seuilImage = dilr2.clone();
         cv::GaussianBlur(seuilImage, seuilImage, cv::Size(7, 7), 0);
 
-
         cv::MatIterator_<uchar> it, end;
         for (it = seuilImage.begin<uchar>(), end = seuilImage.end<uchar>(); it != end; ++it) {
             *it = (*it >= 200) ? 255 : 0;
         }
-        //imwrite("../icon_label/labelled_draw/dil.png", seuilImage);
 
-        // Calcul the similarity between images and references based on shapes comparaison
+        // Calculate the similarity between images and references based on shapes comparaison
         double simLab = 10000.0;
         string res ;
         for(int j=1;j<15;j++){
@@ -97,9 +95,9 @@ list<std::string> reco_label(const string file_img){
         if(simLab>0.001){ // No good correspondance found
             res = "none";
         }
+        //Add the result of the comparaison to be used
         list_res.push_back(res);
     }
-
 
     // Delete temporary directory
     for(int i=1;i<8;i++){

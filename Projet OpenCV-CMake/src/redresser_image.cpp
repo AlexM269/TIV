@@ -1,9 +1,4 @@
-//
-// Created by paulineroches on 19/12/23.
-//
-
 #include "redresser_image.h"
-
 #include <iostream>
 
 using namespace std;
@@ -18,40 +13,37 @@ using namespace cv;
 
 void redresser_image(const std::string& filename,const std::string& nom) {
 
+    //Charge l'image à redresser
     cv::Mat image = cv::imread(filename);
     if (image.empty()) {
         std::cerr << "Erreur lors du chargement de l'image." << std::endl;
     }
 
-
-    // Charger les modèles
+    // Charge les modèles
     cv::Mat modele = cv::imread("../model_cross.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
-
     cv::Mat modele2 = cv::imread("../model_cross_2.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
-
     cv::Mat bord = cv::imread("../bord.png");
     if (modele.empty()) {
         std::cerr << "Erreur lors du chargement du modèle." << std::endl;
     }
 
-    // Appliquer le matching de modèle
+    // Applique le matching de modèle
     cv::Mat resultat;
     cv::Mat resultat2;
     cv::matchTemplate(image, modele, resultat, cv::TM_CCOEFF_NORMED);
     cv::matchTemplate(image, bord, resultat2, cv::TM_CCOEFF_NORMED);
 
-
-    // Définir un seuil pour filtrer les correspondances
+    // Définit un seuil pour filtrer les correspondances
     double seuil = 0.92;
     double seuil2 = 0.994;
 
-    // Trouver les positions des correspondances supérieures au seuil
+    // Trouve les positions des correspondances supérieures au seuil
     std::vector<cv::Point> positions;
     while (true) {
         double minVal, maxVal;
@@ -61,18 +53,18 @@ void redresser_image(const std::string& filename,const std::string& nom) {
         if (positions.size()>1) {
             break;
         }
-        // Si la correspondance est supérieure au seuil, ajouter la position et supprimer la région détectée
+
+        // Si la correspondance est supérieure au seuil, ajoute la position et supprime la région détectée
         if (maxVal >= seuil) {
             positions.push_back(cv::Point(maxLoc.x + modele.cols / 2, maxLoc.y + modele.rows / 2));
 
-            // Mettre à jour la région détectée avec une valeur inférieure au seuil
+            // Met à jour la région détectée avec une valeur inférieure au seuil
             cv::floodFill(resultat, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
         }else{
-        // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+        // Sort de la boucle si aucune correspondance supérieure au seuil n'est trouvée
             break;  
         }
     }
-    cout<<"truc";
     cv::matchTemplate(image, modele2, resultat, cv::TM_CCOEFF_NORMED);
 
     if(positions.size()<1){
@@ -85,14 +77,14 @@ void redresser_image(const std::string& filename,const std::string& nom) {
             if (positions.size()>1) {
                 break;
             }
-            // Si la correspondance est supérieure au seuil, ajouter la position et supprimer la région détectée
+            // Si la correspondance est supérieure au seuil, ajoute la position et supprimer la région détectée
             if (maxVal >= seuil) {
                 positions.push_back(cv::Point(maxLoc.x + modele.cols / 2, maxLoc.y + modele.rows / 2));
 
                 // Mettre à jour la région détectée avec une valeur inférieure au seuil
                 cv::floodFill(resultat, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
             }else{
-            // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+            // Sort de la boucle si aucune correspondance supérieure au seuil n'est trouvée
                 break;  
             }
         }
@@ -107,21 +99,20 @@ void redresser_image(const std::string& filename,const std::string& nom) {
             break;
         }
 
-        // Si la correspondance est supérieure au seuil, ajouter la position et supprimer la région détectée
+        // Si la correspondance est supérieure au seuil, ajoute la position et supprime la région détectée
         if (maxVal >= seuil2) {
             positions.push_back(cv::Point(maxLoc.x + modele.cols / 2, maxLoc.y + modele.rows / 2));
 
-            // Mettre à jour la région détectée avec une valeur inférieure au seuil
+            // Met à jour la région détectée avec une valeur inférieure au seuil
             cv::floodFill(resultat2, maxLoc, cv::Scalar(0), nullptr, cv::Scalar(), cv::Scalar(), 8);
         } else {
-        // Sortir de la boucle si aucune correspondance supérieure au seuil n'est trouvée
+        // Sort de la boucle si aucune correspondance supérieure au seuil n'est trouvée
             break;  
         }
         j=0;
     }
 
-
-    // Définir les points sources (centre des zones de matchTemplate)
+    // Définit les points sources (centre des zones de matchTemplate)
     cv::Point2f pts1[3];
     int i=0;
     for (const auto& position : positions) {
@@ -135,29 +126,27 @@ void redresser_image(const std::string& filename,const std::string& nom) {
         pts1[1]=temp;
     }
 
-    // Définir les points destinations en fonction de l'image 00102
+    // Définit les points destinations en fonction de l'image de référence
     cv::Point2f pts2[3] = { cv::Point2f(2211, 469), cv::Point2f(258, 3230), cv::Point2f(1451, 632)};
     cv::Mat warpedImage;
 
-
     if(pts1[2]!=cv::Point2f(0, 0)){
-        // Calculer la matrice de transformation affine
+        // Calcule la matrice de transformation affine
         cv::Mat M = cv::getAffineTransform(pts1, pts2);
 
-        // Appliquer la transformation affine à l'image
+        // Applique la transformation affine à l'image
         cv::warpAffine(image, warpedImage, M, image.size(), cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255));
-
     }else{
         warpedImage=image;
     }
 
-    // Créer le chemin du nouveau fichier dans un dossier différent
+    // Crée le chemin du nouveau fichier dans un dossier différent
     string outputPath = "../images_droites/" + nom;
 
-    // Enregistrer l'image redressée
+    // Enregistre l'image redressée
     cv::imwrite(outputPath, warpedImage);
 
-    // Attendre que l'utilisateur appuie sur une touche
+    // Attend que l'utilisateur appuie sur une touche
     cv::waitKey(0);
 
 }

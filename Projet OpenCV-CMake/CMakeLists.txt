@@ -10,7 +10,6 @@ include_directories(include ${OpenCV_INCLUDE_DIRS})
 
 add_executable(Projet_OpenCV_CMake
         include/histogram.hpp
-        src/histogram.cpp
         src/main_projet.cpp
         src/text_size.cpp
         src/icon_label.cpp
